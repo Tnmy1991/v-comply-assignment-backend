@@ -19,7 +19,7 @@ const app = express();
 app.set("view engine", "html");
 app.set("port", port);
 
-const allowedOrigins = ["http://localhost:4200"];
+const allowedOrigins = ["http://localhost:4200", "https://poc-angular-app.azurewebsites.net"];
 app.use(
   cors({
     origin: function(origin, callback) {
