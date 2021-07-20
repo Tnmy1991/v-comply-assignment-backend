@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.deploySubpath": ".",
+    "appService.defaultWebAppToDeploy": "/subscriptions/b749da66-d0f6-4828-b192-6d6ad7c66773/resourceGroups/poc-dev/providers/Microsoft.Web/sites/poc-node-api"
+}
