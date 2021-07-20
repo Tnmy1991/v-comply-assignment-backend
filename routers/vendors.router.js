@@ -91,23 +91,30 @@ module.exports = (auth) => {
             let sequential_approvers  = vendor.sequential_approvers.split(",");
             let round_robin_approvers = vendor.round_robin_approvers.split(",");
             let any_one_approvers     = vendor.any_one_approvers.split(",");
+            let users = sequential_approvers.concat(round_robin_approvers);
+            users = users.concat(any_one_approvers);
             
-            await User.find({ "_id": sequential_approvers }, { _id: 1, full_name: 1 }, (err, users) => {
+            await User.find({ "_id": users }, { _id: 1, full_name: 1 }, (err, users) => {
               if (!users) res.status(500).send({error: true, message: "Something went wrong. Please, try after a little bit.."}).end();
               
-              vendorData.sequential_approvers = users;
-            });
-  
-            await User.find({ "_id": round_robin_approvers }, { _id: 1, full_name: 1 }, (err, users) => {
-              if (!users) res.status(500).send({error: true, message: "Something went wrong. Please, try after a little bit.."}).end();
+              const fetchedUsers = users.map((user) => {
+                return {
+                  _id: user._id.toString(),
+                  full_name: user.full_name
+                }
+              });
               
-              vendorData.round_robin_approvers = users;
-            });
-  
-            await User.find({ "_id": any_one_approvers }, { _id: 1, full_name: 1 }, (err, users) => {
-              if (!users) res.status(500).send({error: true, message: "Something went wrong. Please, try after a little bit.."}).end();
+              vendorData.sequential_approvers = fetchedUsers.filter((user) => {
+                return sequential_approvers.indexOf(user._id) >= 0;
+              });
               
-              vendorData.any_one_approvers = users;
+              vendorData.round_robin_approvers = fetchedUsers.filter((user) => {
+                return round_robin_approvers.indexOf(user._id) >= 0;
+              });
+              
+              vendorData.any_one_approvers = fetchedUsers.filter((user) => {
+                return any_one_approvers.indexOf(user._id) >= 0;
+              });
             });
   
             res.status(200).json({ error: false, data: vendorData }).end();
